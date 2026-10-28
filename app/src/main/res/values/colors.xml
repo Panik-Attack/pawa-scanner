@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Pawa brand -->
+    <color name="pawa_green">#FF8CC620</color>
+    <color name="pawa_green_dark">#FF6E9C19</color>
+    <color name="pawa_green_light">#FFA8D94A</color>
+    <color name="pawa_green_soft">#148CC620</color> <!-- 8% -->
+    <color name="on_pawa_green">#FF0E1208</color>
+
+    <!-- Surfaces -->
+    <color name="surface_base">#FF0B0F0A</color>
+    <color name="surface_raised">#FF121711</color>
+
+    <!-- Text -->
+    <color name="text_primary">#FFF2F5EE</color>
+    <color name="text_secondary">#FFA7B0A0</color>
+
+    <!-- Glass -->
+    <color name="glass_fill_dark">#14FFFFFF</color> <!-- 8% -->
+    <color name="glass_fill_dark_strong">#1FFFFFFF</color> <!-- 12% -->
+    <color name="glass_border">#33FFFFFF</color> <!-- 20% -->
+    <color name="glass_border_soft">#14FFFFFF</color> <!-- 8% -->
+    <color name="glass_highlight">#80FFFFFF</color> <!-- 50% -->
+    <color name="glass_tint_green">#148CC620</color> <!-- 8% -->
+
+    <!-- Semantics -->
+    <color name="success">#FF4CD964</color>
+    <color name="warning">#FFF5A623</color>
+    <color name="error">#FFFF5A5F</color>
+    <color name="info">#FF4DA3FF</color>
+    <color name="scrim">#66000000</color> <!-- 40% -->
+</resources>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="spacing_4">4dp</dimen>
+    <dimen name="spacing_8">8dp</dimen>
+    <dimen name="spacing_12">12dp</dimen>
+    <dimen name="spacing_16">16dp</dimen>
+    <dimen name="spacing_20">20dp</dimen>
+    <dimen name="spacing_24">24dp</dimen>
+    <dimen name="spacing_32">32dp</dimen>
+    <dimen name="spacing_48">48dp</dimen>
+
+    <dimen name="radius_pill">999dp</dimen>
+    <dimen name="radius_chips_inputs">16dp</dimen>
+    <dimen name="radius_cards">20dp</dimen>
+    <dimen name="radius_panels">28dp</dimen>
+
+    <dimen name="elevation_glass">8dp</dimen>
+    <dimen name="glass_blur_fallback_alpha">0.18</dimen>
+</resources>

@@ -1,0 +1,26 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.PawaScanner" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:windowBackground">@color/surface_base</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
+        <item name="android:enforceStatusBarContrast" tools:targetApi="29">false</item>
+        <item name="android:enforceNavigationBarContrast" tools:targetApi="29">false</item>
+
+        <item name="colorPrimary">@color/pawa_green</item>
+        <item name="colorOnPrimary">@color/on_pawa_green</item>
+        <item name="colorPrimaryContainer">@color/pawa_green_soft</item>
+        <item name="colorOnPrimaryContainer">@color/pawa_green_light</item>
+
+        <item name="colorSurface">@color/surface_base</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorSurfaceVariant">@color/surface_raised</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary</item>
+
+        <item name="colorOutline">@color/glass_border</item>
+    </style>
+
+    <style name="Theme.PawaScanner" parent="Base.Theme.PawaScanner" />
+</resources>
