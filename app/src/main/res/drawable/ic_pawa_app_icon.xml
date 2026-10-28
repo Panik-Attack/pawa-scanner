@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="360dp"
-    android:height="360dp"
+    android:width="108dp"
+    android:height="108dp"
     android:viewportWidth="360"
     android:viewportHeight="360">
     <group
         android:translateX="-50"
         android:translateY="100"
-        android:scaleX="0.78"
-        android:scaleY="0.78"
+        android:scaleX="0.55"
+        android:scaleY="0.55"
         android:pivotX="180"
         android:pivotY="180">
         <path
