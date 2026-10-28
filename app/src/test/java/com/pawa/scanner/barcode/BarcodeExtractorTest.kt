@@ -50,7 +50,7 @@ class BarcodeExtractorTest {
             stringExtras("barcode" to null),
             byteExtras(
                 "barcode_bytes" to null,
-                "data_bytes" to emptyByteArray()
+                "data_bytes" to byteArrayOf()
             )
         )
         assertNull(result)

@@ -49,7 +49,7 @@
             android:textAllCaps="false"
             android:textColor="@color/on_pawa_green"
             android:textSize="@dimen/text_size_label_button"
-            android:textStyle="600"
+            android:textStyle="bold"
             app:backgroundTint="@color/pawa_green"
             app:cornerRadius="999dp"
             app:rippleColor="@color/pawa_green_dark" />
