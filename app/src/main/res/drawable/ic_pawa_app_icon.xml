@@ -6,7 +6,11 @@
     android:viewportHeight="360">
     <group
         android:translateX="-50"
-        android:translateY="100">
+        android:translateY="100"
+        android:scaleX="0.78"
+        android:scaleY="0.78"
+        android:pivotX="180"
+        android:pivotY="180">
         <path
             android:fillColor="#98BB3D"
             android:pathData="M382.29,1.6l-77.45,19.54,18.45,17.27c-65.15,66.4-156.36,101.6-245.92,123.68,96.92-11.65,194.75-37.87,271.23-99.99l17.64,16.51L382.29,1.6Z"/>
