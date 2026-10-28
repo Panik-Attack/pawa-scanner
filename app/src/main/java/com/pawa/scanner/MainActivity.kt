@@ -4,11 +4,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.RenderEffect
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -22,7 +20,6 @@ class MainActivity : AppCompatActivity() {
     private val barcodeExtractor = BarcodeExtractor()
     private val scanRepository = ScanRepository()
 
-    private lateinit var glassBar: LinearLayout
     private lateinit var btnScan: MaterialButton
     private lateinit var statusText: TextView
 
@@ -40,35 +37,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        glassBar = findViewById(R.id.glassBar)
         btnScan = findViewById(R.id.btnScan)
         statusText = findViewById(R.id.statusText)
 
-        // Nota: el blur de fondo no se aplica al panel contenedor porque
-        // afectaría la legibilidad del botón y el texto dentro de él.
-        // El drawable bg_glass_panel ya provee fill translúcido + borde.
-
         btnScan.setOnClickListener {
             triggerScan()
-        }
-
-        setupFocusIndicator(glassBar)
-    }
-
-    /**
-     * Agrega un indicador de foco visible (borde verde pawa) al panel de vidrio,
-     * para navegacion por teclado o D-pad en terminales PDA.
-     */
-    private fun setupFocusIndicator(view: View?) {
-        view?.let {
-            it.isFocusable = true
-            it.isFocusableInTouchMode = true
-            it.setOnFocusChangeListener { _, hasFocus ->
-                it.setOutlineAmbientShadowColor(
-                    if (hasFocus) android.graphics.Color.parseColor("#6E9C19")
-                    else android.graphics.Color.TRANSPARENT
-                )
-            }
         }
     }
 
@@ -161,18 +134,4 @@ class MainActivity : AppCompatActivity() {
         statusText.visibility = View.VISIBLE
     }
 
-    /**
-     * Aplica blur de fondo al panel de vidrio segun el nivel de API.
-     *
-     * - API 31+: RenderEffect real (blur 24dp) sobre el contenido trasero.
-     * - API < 31: sin blur (el drawable ya usa fill translúcido 8 % como fallback).
-     */
-    private fun applyGlassBlur(view: View?) {
-        if (view == null) return
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2) {
-            view.setRenderEffect(
-                RenderEffect.createBlurEffect(24f, 24f, android.graphics.Shader.TileMode.CLAMP)
-            )
-        }
-    }
 }
