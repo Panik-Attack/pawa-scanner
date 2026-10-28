@@ -16,4 +16,12 @@
 
     <dimen name="elevation_glass">8dp</dimen>
     <dimen name="glass_blur_fallback_alpha">0.18</dimen>
+
+    <!-- Tipografia (tokens segun spec.md seccion 3) -->
+    <dimen name="text_size_display">32sp</dimen>
+    <dimen name="text_size_screen_title">24sp</dimen>
+    <dimen name="text_size_card_title">18sp</dimen>
+    <dimen name="text_size_body">15sp</dimen>
+    <dimen name="text_size_secondary">13sp</dimen>
+    <dimen name="text_size_label_button">14sp</dimen>
 </resources>

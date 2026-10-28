@@ -44,14 +44,25 @@
             android:id="@+id/btnScan"
             android:layout_width="match_parent"
             android:layout_height="52dp"
+            android:layout_marginTop="12dp"
             android:text="Escanear"
             android:textAllCaps="false"
             android:textColor="@color/on_pawa_green"
-            android:textSize="14sp"
+            android:textSize="@dimen/text_size_label_button"
             android:textStyle="600"
             app:backgroundTint="@color/pawa_green"
             app:cornerRadius="999dp"
             app:rippleColor="@color/pawa_green_dark" />
+
+        <TextView
+            android:id="@+id/statusText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/text_size_body"
+            android:visibility="gone" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
