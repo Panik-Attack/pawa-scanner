@@ -1,6 +1,6 @@
 package com.pawa.scanner.scan
 
-import com.pawa.scanner.api.MockScanApiClient
+import com.pawa.scanner.api.RealScanApiClient
 import com.pawa.scanner.api.ScanApiClient
 import com.pawa.scanner.api.ScanApiException
 import com.pawa.scanner.api.ScanApiResponse
@@ -71,7 +71,7 @@ class ScanRepository private constructor(
 
         fun get(): ScanRepository {
             return instance ?: synchronized(this) {
-                instance ?: ScanRepository(MockScanApiClient()).also { instance = it }
+                instance ?: ScanRepository(RealScanApiClient.get()).also { instance = it }
             }
         }
 

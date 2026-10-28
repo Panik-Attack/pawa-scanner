@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -7,6 +10,13 @@ android {
     namespace = "com.pawa.scanner"
     compileSdk = 34
 
+    // Leer propiedades desde local.properties (no se sube a git)
+    val localProperties = Properties()
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localProperties.load(FileInputStream(localPropertiesFile))
+    }
+
     defaultConfig {
         applicationId = "com.pawa.scanner"
         minSdk = 24
@@ -15,6 +25,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "PAWA_API_KEY", "\"${localProperties.getProperty("pawa.api.key", "TU_API_KEY_AQUI")}\"")
+        buildConfigField("String", "PAWA_DEVICE_ID", "\"${localProperties.getProperty("pawa.device.id", "PDA-001")}\"")
     }
 
     buildTypes {
@@ -26,6 +39,10 @@ android {
             )
         }
     }
+    buildFeatures {
+        buildConfig = true
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
