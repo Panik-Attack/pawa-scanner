@@ -9,6 +9,7 @@
     android:fitsSystemWindows="true"
     tools:context=".MainActivity">
 
+    <!-- Logo de Pawa centrado al 30% de altura -->
     <ImageView
         android:id="@+id/ivLogo"
         android:layout_width="0dp"
@@ -24,6 +25,51 @@
         app:layout_constraintVertical_bias="0.30"
         app:srcCompat="@drawable/ic_pawa_logo" />
 
+    <!-- Área de animación: check (éxito) o X (error) -->
+    <ImageView
+        android:id="@+id/ivAnimation"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_marginTop="24dp"
+        android:alpha="0"
+        android:contentDescription="Resultado del escaneo"
+        android:scaleType="centerInside"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ivLogo" />
+
+    <!-- Indicador de carga (ProgressBar circular) -->
+    <ProgressBar
+        android:id="@+id/pbLoading"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="24dp"
+        android:alpha="0"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/pawa_green"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ivLogo" />
+
+    <!-- Texto de estado debajo del área de animación -->
+    <TextView
+        android:id="@+id/statusText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:textColor="@color/text_primary"
+        android:textSize="@dimen/text_size_body"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pbLoading" />
+
+    <!-- Botón Escanear -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnScan"
         android:layout_width="0dp"
@@ -43,21 +89,6 @@
         app:strokeWidth="1dp"
         app:strokeColor="@color/pawa_green_dark"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/statusText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginEnd="40dp"
-        android:layout_marginBottom="24dp"
-        android:gravity="center"
-        android:textColor="@color/text_primary"
-        android:textSize="@dimen/text_size_body"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/btnScan"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
