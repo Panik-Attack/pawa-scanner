@@ -44,7 +44,9 @@ class MainActivity : AppCompatActivity() {
         btnScan = findViewById(R.id.btnScan)
         statusText = findViewById(R.id.statusText)
 
-        applyGlassBlur(glassBar)
+        // Nota: el blur de fondo no se aplica al panel contenedor porque
+        // afectaría la legibilidad del botón y el texto dentro de él.
+        // El drawable bg_glass_panel ya provee fill translúcido + borde.
 
         btnScan.setOnClickListener {
             triggerScan()
