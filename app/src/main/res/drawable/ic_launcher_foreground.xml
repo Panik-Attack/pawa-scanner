@@ -2,10 +2,10 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Fondo blanco del icono adaptativo -->
     <item android:drawable="@color/white"/>
-    <!-- Icono de app Pawa: vector centrado y reducido para no verse recortado -->
+    <!-- Icono de app Pawa: vector centrado con margen para no verse recortado -->
     <item
         android:drawable="@drawable/ic_pawa_app_icon"
-        android:width="108dp"
-        android:height="108dp"
+        android:width="100dp"
+        android:height="100dp"
         android:gravity="center"/>
 </layer-list>
