@@ -220,6 +220,7 @@ class MainActivity : AppCompatActivity() {
         val filter = IntentFilter().apply {
             addAction("com.teradevice.scan.RESULT")
             addAction("com.tera.android.scan.result")
+            addAction("com.tera.scan.action.BARCODE_RECEIVED")
             addAction("android.intent.ACTION_DECODE_DATA")
             addAction("com.android.server.scannerservice.broadcast")
             addAction("com.barcode.sendBroadcast")
