@@ -1,12 +1,10 @@
 package com.pawa.scanner
 
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -16,7 +14,6 @@ import com.google.android.material.button.MaterialButton
 import com.pawa.scanner.api.ScanApiException
 import com.pawa.scanner.audio.ScanSound
 import com.pawa.scanner.audio.ScanSoundPlayer
-import com.pawa.scanner.barcode.BarcodeExtractor
 import com.pawa.scanner.scan.ScanRepository
 import com.pawa.scanner.scan.ScanState
 import kotlinx.coroutines.CoroutineScope
@@ -27,7 +24,6 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
-    private val barcodeExtractor = BarcodeExtractor()
     private val scanRepository = ScanRepository.get()
     private lateinit var soundPlayer: ScanSoundPlayer
     private val scope = CoroutineScope(Dispatchers.Main)
@@ -36,20 +32,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var ivAnimation: ImageView
     private lateinit var pbLoading: ProgressBar
     private lateinit var statusText: TextView
+    private lateinit var etTracking: EditText
     private lateinit var btnScan: MaterialButton
+    private lateinit var btnSendTracking: MaterialButton
 
     private var scanJob: Job? = null
     private var isAudioUnlocked = false
-
-    private val scanReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent == null) return
-            val barcode = extractBarcode(intent)
-            if (!barcode.isNullOrBlank()) {
-                handleScannedCode(barcode.trim())
-            }
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,9 +47,30 @@ class MainActivity : AppCompatActivity() {
         ivAnimation = findViewById(R.id.ivAnimation)
         pbLoading = findViewById(R.id.pbLoading)
         statusText = findViewById(R.id.statusText)
+        etTracking = findViewById(R.id.etTracking)
         btnScan = findViewById(R.id.btnScan)
+        btnSendTracking = findViewById(R.id.btnSendTracking)
 
         soundPlayer = ScanSoundPlayer.get(this)
+
+        // Modo keyboard/teclado: el escáner escribe el código en el input con foco.
+        // El teclado del sistema no aparece gracias al inputType adecuado y al
+        // windowSoftInputMode=stateAlwaysHidden del manifiesto.
+        etTracking.requestFocus()
+        etTracking.setShowSoftInputOnFocus(false)
+
+        // Detectar "Enter" del escáner (tecla de intro al terminar de escribir el código)
+        etTracking.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                val code = etTracking.text.toString().trim()
+                if (code.isNotEmpty()) {
+                    sendTracking(code)
+                }
+                true
+            } else {
+                false
+            }
+        }
 
         btnScan.setOnClickListener {
             // Desbloqueo de audio en el primer gesto del usuario
@@ -69,10 +78,54 @@ class MainActivity : AppCompatActivity() {
                 soundPlayer.unlockAudio()
                 isAudioUnlocked = true
             }
-            triggerScan()
+            val code = etTracking.text.toString().trim()
+            if (code.isNotEmpty()) {
+                // Si hay tracking escrito/escaneado, registrarlo directamente
+                sendTracking(code)
+            } else {
+                // En modo keyboard el escáner escribe directamente en el input con foco;
+                // no hay que iniciar un escaneo por broadcast/intent.
+                Toast.makeText(this, R.string.msg_ready_to_scan, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        btnSendTracking.setOnClickListener {
+            if (!isAudioUnlocked) {
+                soundPlayer.unlockAudio()
+                isAudioUnlocked = true
+            }
+            sendTracking(etTracking.text.toString().trim())
         }
 
         setupResultObserver()
+    }
+
+    /**
+     * Envía el código de tracking a la API. Se usa tanto para entrada manual
+     * (botón Enviar tracking) como cuando el escáner escribe el código y se
+     * detecta "Enter", o cuando el usuario pulsa Escanear con el input relleno.
+     */
+    private fun sendTracking(code: String) {
+        if (code.isEmpty()) {
+            Toast.makeText(this, R.string.msg_enter_tracking, Toast.LENGTH_SHORT).show()
+            etTracking.requestFocus()
+            return
+        }
+
+        hideKeyboard()
+        etTracking.clearFocus()
+
+        // Cancelar escaneo previo si aún está en curso y enviar a la API
+        scanJob?.cancel()
+        scanRepository.processScan(code, scope)
+    }
+
+    private fun hideKeyboard() {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+        val view = currentFocus
+        if (view != null) {
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+        }
     }
 
     /**
@@ -92,7 +145,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Reinicia la UI a su estado inicial.
+     * Reinicia la UI a su estado inicial y deja el input listo para el siguiente tracking.
      */
     private fun resetUI() {
         ivAnimation.alpha = 0f
@@ -104,6 +157,9 @@ class MainActivity : AppCompatActivity() {
 
         statusText.alpha = 0f
         statusText.visibility = View.GONE
+
+        // El input queda con foco para seguir escaneando (modo teclado)
+        etTracking.requestFocus()
 
         btnScaleToNormal()
     }
@@ -132,6 +188,10 @@ class MainActivity : AppCompatActivity() {
      * Muestra animación de éxito (check verde) y reproduce sonido de éxito.
      */
     private fun showSuccess(message: String) {
+        // Borrar el input tras un éxito para quedar listo con el siguiente tracking
+        etTracking.text.clear()
+        etTracking.requestFocus()
+
         pbLoading.visibility = View.GONE
         pbLoading.alpha = 0f
 
@@ -167,6 +227,10 @@ class MainActivity : AppCompatActivity() {
      * Muestra animación de código ya existente (X roja) y sonido de error.
      */
     private fun showExisting(message: String) {
+        // Borrar el input tras un éxito (código ya existente) para quedar listo con el siguiente
+        etTracking.text.clear()
+        etTracking.requestFocus()
+
         showResultWithError(message, R.drawable.ic_close, ScanSound.ERROR)
     }
 
@@ -178,6 +242,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showResultWithError(message: String, iconRes: Int, sound: ScanSound) {
+        // Borrar el input también en error para quedar listo con el siguiente tracking
+        etTracking.text.clear()
+        etTracking.requestFocus()
+
         pbLoading.visibility = View.GONE
         pbLoading.alpha = 0f
 
@@ -215,84 +283,9 @@ class MainActivity : AppCompatActivity() {
         btnScan.animate().scaleX(1f).scaleY(1f).setDuration(150).start()
     }
 
-    override fun onResume() {
-        super.onResume()
-        val filter = IntentFilter().apply {
-            addAction("com.teradevice.scan.RESULT")
-            addAction("com.tera.android.scan.result")
-            addAction("com.tera.scan.action.BARCODE_RECEIVED")
-            addAction("android.intent.ACTION_DECODE_DATA")
-            addAction("com.android.server.scannerservice.broadcast")
-            addAction("com.barcode.sendBroadcast")
-            addAction("com.scanner.broadcast")
-            addAction("com.honeywell.decode.intent.action.SCAN_RESULT")
-            addAction("com.zebra.scanner.RESULT_ACTION")
-            addAction("nlscan.action.SCANNER_RESULT")
-            addAction("com.se4500.onDecodeComplete")
-            addAction("com.urovo.scan.result")
-            addAction("com.sunmi.scanner.ACTION_DATA_CODE_RECEIVED")
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(scanReceiver, filter, Context.RECEIVER_EXPORTED)
-        } else {
-            registerReceiver(scanReceiver, filter)
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        try {
-            unregisterReceiver(scanReceiver)
-        } catch (_: Exception) {
-        }
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         scanJob?.cancel()
         soundPlayer.release()
-    }
-
-    private fun triggerScan() {
-        val actions = listOf(
-            "com.teradevice.scan.START",
-            "com.tera.android.scan.start",
-            "com.android.scanservice.scan",
-            "com.scanner.action.START_SCAN",
-            "ACTION_BARCODE_START",
-            "com.teradevice.scanner.START"
-        )
-        for (action in actions) {
-            try {
-                val intent = Intent(action)
-                sendBroadcast(intent)
-            } catch (_: Exception) {
-            }
-        }
-        Toast.makeText(this, "Listo para escanear...", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun extractBarcode(intent: Intent): String? {
-        val stringExtras = barcodeExtractor.stringKeys.associateWith { intent.getStringExtra(it) }
-        val byteExtras = barcodeExtractor.byteKeys.associateWith { intent.getByteArrayExtra(it) }
-        return barcodeExtractor.extract(stringExtras, byteExtras)
-    }
-
-    /**
-     * Maneja un código escaneado:
-     * 1. Desbloquea audio si es el primer gesto
-     * 2. Envía a ScanRepository.processScan (que llama a la API)
-     * 3. La UI se actualiza vía observer (loading → success/existing/error)
-     */
-    private fun handleScannedCode(code: String) {
-        if (!isAudioUnlocked) {
-            soundPlayer.unlockAudio()
-            isAudioUnlocked = true
-        }
-
-        // Cancelar escaneo previo si aún está en curso
-        scanJob?.cancel()
-
-        scanRepository.processScan(code, scope)
     }
 }

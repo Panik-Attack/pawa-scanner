@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">pawa-scanner</string>
+
+    <string name="hint_tracking_number">Número de tracking</string>
+    <string name="btn_send_tracking">Enviar tracking</string>
+    <string name="msg_enter_tracking">Ingresa un número de tracking</string>
+    <string name="msg_ready_to_scan">Listo para escanear. Escanea el código y pulsa Intro.</string>
+    <string name="msg_sending">Enviando al servidor…</string>
+    <string name="content_description_tracking_input">Campo para escribir o pegar el número de tracking</string>
 </resources>
