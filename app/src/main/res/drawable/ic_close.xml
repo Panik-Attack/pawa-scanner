@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="72dp"
-    android:height="72dp"
+    android:width="96dp"
+    android:height="96dp"
     android:viewportWidth="64"
     android:viewportHeight="64">
-    <!-- Fondo círculo rojo suave -->
+    <!-- Fondo círculo rojo suave, centrado en el viewport (32,32) radio 30 -->
     <path
         android:fillColor="#FF5A5F"
-        android:pathData="M32,2 A30,30 0 1,1 62,32 A30,30 0 1,1 32,2" />
-    <!-- X blanca gruesa -->
+        android:fillType="nonZero"
+        android:pathData="M32,2 C45.6,2 62,15.4 62,32 C62,48.6 45.6,62 32,62 C18.4,62 2,48.6 2,32 C2,15.4 15.4,2 32,2 Z" />
+    <!-- X blanca gruesa, centrada en el círculo -->
     <path
         android:strokeColor="#FFFFFF"
-        android:strokeWidth="7"
+        android:strokeWidth="9"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
-        android:pathData="M20,20 L44,44 M44,20 L20,44" />
+        android:pathData="M22,22 L42,42 M42,22 L22,42" />
 </vector>
