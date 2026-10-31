@@ -83,37 +83,43 @@ class RealScanApiClient private constructor() : ScanApiClient {
                     400 -> {
                         continuation.resume(ScanApiResponse(
                             isNew = false,
-                            message = "Solicitud inválida: $responseBody"
+                            message = "Solicitud inválida: $responseBody",
+                            isError = true
                         ))
                     }
                     401 -> {
                         continuation.resume(ScanApiResponse(
                             isNew = false,
-                            message = "No autorizado: verifica la API key"
+                            message = "No autorizado: verifica la API key",
+                            isError = true
                         ))
                     }
                     403 -> {
                         continuation.resume(ScanApiResponse(
                             isNew = false,
-                            message = "IP no permitida: verifica PREARRIVAL_PDA_ALLOWED_IPS"
+                            message = "IP no permitida: verifica PREARRIVAL_PDA_ALLOWED_IPS",
+                            isError = true
                         ))
                     }
                     409 -> {
                         continuation.resume(ScanApiResponse(
                             isNew = false,
-                            message = "Conflicto: tracking no se puede eliminar o ya existe"
+                            message = "Conflicto: tracking no se puede eliminar o ya existe",
+                            isError = true
                         ))
                     }
                     500 -> {
                         continuation.resume(ScanApiResponse(
                             isNew = false,
-                            message = "Error interno del servidor"
+                            message = "Error interno del servidor",
+                            isError = true
                         ))
                     }
                     else -> {
                         continuation.resume(ScanApiResponse(
                             isNew = false,
-                            message = "Error inesperado: $responseCode $responseBody"
+                            message = "Error inesperado: $responseCode $responseBody",
+                            isError = true
                         ))
                     }
                 }
@@ -122,7 +128,8 @@ class RealScanApiClient private constructor() : ScanApiClient {
                 Log.e(TAG, "Error registrando scan", e)
                 continuation.resume(ScanApiResponse(
                     isNew = false,
-                    message = "Error de red: ${e.message}"
+                    message = "Error de red: ${e.message}",
+                    isError = true
                 ))
             }
         }.start()

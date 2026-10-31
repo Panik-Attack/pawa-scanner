@@ -126,11 +126,20 @@ class ScanRepository private constructor(
             try {
                 val response: ScanApiResponse = apiClient.sendScan(result)
 
+                val newState = when {
+                    response.isError -> ScanState.ERROR
+                    response.isNew -> ScanState.SUCCESS_NEW
+                    else -> ScanState.SUCCESS_EXISTING
+                }
                 val newOutcome = ScanOutcome(
                     code = code,
-                    state = if (response.isNew) ScanState.SUCCESS_NEW else ScanState.SUCCESS_EXISTING,
+                    state = newState,
                     message = response.message.ifEmpty {
-                        if (response.isNew) "Código registrado como nuevo" else "Código ya existente"
+                        when {
+                            response.isError -> "Error de servidor"
+                            response.isNew -> "Código registrado como nuevo"
+                            else -> "Código ya existente"
+                        }
                     }
                 )
                 lastOutcome = newOutcome

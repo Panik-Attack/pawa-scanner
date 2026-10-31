@@ -35,7 +35,8 @@ interface ScanApiClient {
 data class ScanApiResponse(
     val isNew: Boolean,
     val message: String = "",
-    val serverTimestamp: Long? = null
+    val serverTimestamp: Long? = null,
+    val isError: Boolean = false
 )
 
 /**
