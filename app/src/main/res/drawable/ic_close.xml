@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="64dp"
-    android:height="64dp"
+    android:width="72dp"
+    android:height="72dp"
     android:viewportWidth="64"
     android:viewportHeight="64">
     <!-- Fondo círculo rojo suave -->
     <path
         android:fillColor="#FF5A5F"
         android:pathData="M32,2 A30,30 0 1,1 62,32 A30,30 0 1,1 32,2" />
-    <!-- X blanca -->
+    <!-- X blanca gruesa -->
     <path
-        android:fillColor="#FFFFFF"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="7"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
         android:pathData="M20,20 L44,44 M44,20 L20,44" />
 </vector>

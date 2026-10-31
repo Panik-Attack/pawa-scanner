@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="64dp"
-    android:height="64dp"
+    android:width="72dp"
+    android:height="72dp"
     android:viewportWidth="64"
     android:viewportHeight="64">
     <!-- Fondo círculo verde suave -->
     <path
         android:fillColor="#4CD964"
         android:pathData="M32,2 A30,30 0 1,1 62,32 A30,30 0 1,1 32,2" />
-    <!-- Check blanco -->
+    <!-- Check blanco grueso -->
     <path
-        android:fillColor="#FFFFFF"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="7"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
         android:pathData="M20,32 L28,40 L44,24" />
 </vector>
