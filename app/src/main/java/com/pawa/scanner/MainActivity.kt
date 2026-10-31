@@ -10,8 +10,6 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.button.MaterialButton
-import com.pawa.scanner.api.ScanApiException
 import com.pawa.scanner.audio.ScanSound
 import com.pawa.scanner.audio.ScanSoundPlayer
 import com.pawa.scanner.scan.ScanRepository
@@ -33,8 +31,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var pbLoading: ProgressBar
     private lateinit var statusText: TextView
     private lateinit var etTracking: EditText
-    private lateinit var btnScan: MaterialButton
-    private lateinit var btnSendTracking: MaterialButton
 
     private var scanJob: Job? = null
     private var isAudioUnlocked = false
@@ -48,18 +44,17 @@ class MainActivity : AppCompatActivity() {
         pbLoading = findViewById(R.id.pbLoading)
         statusText = findViewById(R.id.statusText)
         etTracking = findViewById(R.id.etTracking)
-        btnScan = findViewById(R.id.btnScan)
-        btnSendTracking = findViewById(R.id.btnSendTracking)
 
         soundPlayer = ScanSoundPlayer.get(this)
 
-        // Modo keyboard/teclado: el escáner escribe el código en el input con foco.
-        // El teclado del sistema no aparece gracias al inputType adecuado y al
+        // Modo teclado: el escáner escribe el código en el input con foco.
+        // El teclado del sistema no aparece gracias al inputType y al
         // windowSoftInputMode=stateAlwaysHidden del manifiesto.
         etTracking.requestFocus()
         etTracking.setShowSoftInputOnFocus(false)
 
-        // Detectar "Enter" del escáner (tecla de intro al terminar de escribir el código)
+        // Cuando el escáner termina de escribir el código (tecla Enter),
+        // se envía automáticamente a la API para registrarlo.
         etTracking.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 val code = etTracking.text.toString().trim()
@@ -72,44 +67,24 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        btnScan.setOnClickListener {
-            // Desbloqueo de audio en el primer gesto del usuario
-            if (!isAudioUnlocked) {
-                soundPlayer.unlockAudio()
-                isAudioUnlocked = true
-            }
-            val code = etTracking.text.toString().trim()
-            if (code.isNotEmpty()) {
-                // Si hay tracking escrito/escaneado, registrarlo directamente
-                sendTracking(code)
-            } else {
-                // En modo keyboard el escáner escribe directamente en el input con foco;
-                // no hay que iniciar un escaneo por broadcast/intent.
-                Toast.makeText(this, R.string.msg_ready_to_scan, Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        btnSendTracking.setOnClickListener {
-            if (!isAudioUnlocked) {
-                soundPlayer.unlockAudio()
-                isAudioUnlocked = true
-            }
-            sendTracking(etTracking.text.toString().trim())
-        }
-
         setupResultObserver()
     }
 
     /**
-     * Envía el código de tracking a la API. Se usa tanto para entrada manual
-     * (botón Enviar tracking) como cuando el escáner escribe el código y se
-     * detecta "Enter", o cuando el usuario pulsa Escanear con el input relleno.
+     * Envía el código de tracking a la API. Se invoca automáticamente cuando
+     * el escáner termina de escribir el código en el input (tecla Enter).
      */
     private fun sendTracking(code: String) {
         if (code.isEmpty()) {
             Toast.makeText(this, R.string.msg_enter_tracking, Toast.LENGTH_SHORT).show()
             etTracking.requestFocus()
             return
+        }
+
+        // Desbloqueo de audio en el primer escaneo del usuario
+        if (!isAudioUnlocked) {
+            soundPlayer.unlockAudio()
+            isAudioUnlocked = true
         }
 
         hideKeyboard()
@@ -160,8 +135,6 @@ class MainActivity : AppCompatActivity() {
 
         // El input queda con foco para seguir escaneando (modo teclado)
         etTracking.requestFocus()
-
-        btnScaleToNormal()
     }
 
     /**
@@ -180,8 +153,6 @@ class MainActivity : AppCompatActivity() {
         statusText.alpha = 0f
         statusText.text = message
         statusText.animate().alpha(1f).setDuration(200).start()
-
-        btnScaleToNormal()
     }
 
     /**
@@ -214,7 +185,6 @@ class MainActivity : AppCompatActivity() {
         statusText.animate().alpha(1f).setDuration(320).start()
 
         soundPlayer.play(ScanSound.SUCCESS)
-        btnScaleToNormal()
 
         // Ocultar animación después de 2 segundos y volver a estado inicial
         scope.launch {
@@ -227,7 +197,7 @@ class MainActivity : AppCompatActivity() {
      * Muestra animación de código ya existente (X roja) y sonido de error.
      */
     private fun showExisting(message: String) {
-        // Borrar el input tras un éxito (código ya existente) para quedar listo con el siguiente
+        // Borrar el input tras un código existente para quedar listo con el siguiente
         etTracking.text.clear()
         etTracking.requestFocus()
 
@@ -268,19 +238,11 @@ class MainActivity : AppCompatActivity() {
         statusText.animate().alpha(1f).setDuration(320).start()
 
         soundPlayer.play(sound)
-        btnScaleToNormal()
 
         scope.launch {
             kotlinx.coroutines.delay(2000)
             resetUI()
         }
-    }
-
-    /**
-     * Devuelve el botón a su escala normal (1.0).
-     */
-    private fun btnScaleToNormal() {
-        btnScan.animate().scaleX(1f).scaleY(1f).setDuration(150).start()
     }
 
     override fun onDestroy() {

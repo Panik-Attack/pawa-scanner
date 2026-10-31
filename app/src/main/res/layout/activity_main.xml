@@ -69,8 +69,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/pbLoading" />
 
-    <!-- Input de tracking: número que el escáner escribe como teclado o se escribe manualmente.
-         inputType text para recibir el código del escáner (modo keyboard/intent de teclado). -->
+    <!-- Input de tracking: el escáner lo llena como teclado y, al terminar (Enter),
+         se envía automáticamente a la API para registrar el código. -->
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/etTracking"
         style="@style/Widget.Pawa.Input.Glass"
@@ -79,6 +79,7 @@
         android:layout_marginStart="40dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="40dp"
+        android:layout_marginBottom="24dp"
         android:hint="@string/hint_tracking_number"
         android:inputType="text"
         android:imeOptions="actionDone"
@@ -86,45 +87,9 @@
         android:focusable="true"
         android:importantForAutofill="no"
         android:contentDescription="@string/content_description_tracking_input"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/statusText" />
-
-    <!-- Botón enviar tracking (escrito o pegado en el input) -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnSendTracking"
-        style="@style/Widget.Pawa.Button.Secondary"
-        android:layout_width="0dp"
-        android:layout_height="52dp"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="40dp"
-        android:text="@string/btn_send_tracking"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/etTracking" />
-
-    <!-- Botón Escanear -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnScan"
-        android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:layout_marginStart="40dp"
-        android:layout_marginEnd="40dp"
-        android:layout_marginBottom="48dp"
-        android:paddingHorizontal="24dp"
-        android:text="Escanear"
-        android:textAllCaps="false"
-        android:textColor="@color/on_pawa_green"
-        android:textSize="@dimen/text_size_label_button"
-        android:textStyle="bold"
-        app:backgroundTint="@color/pawa_green"
-        app:cornerRadius="999dp"
-        app:rippleColor="@color/pawa_green_dark"
-        app:strokeWidth="1dp"
-        app:strokeColor="@color/pawa_green_dark"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
