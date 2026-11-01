@@ -2,6 +2,7 @@ package com.pawa.scanner
 
 import android.content.Context
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
@@ -35,6 +36,13 @@ class MainActivity : AppCompatActivity() {
     private var scanJob: Job? = null
     private var isAudioUnlocked = false
 
+    // Último código enviado y momento del envío. Evita duplicar el registro
+    // cuando el teclado suave y la tecla Enter de hardware del escáner
+    // disparan el envío para el mismo código casi al mismo tiempo.
+    private var lastSubmittedCode = ""
+    private var lastSubmitTime = 0L
+    private val submitDebounceMs = 1500L
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -53,8 +61,8 @@ class MainActivity : AppCompatActivity() {
         etTracking.requestFocus()
         etTracking.setShowSoftInputOnFocus(false)
 
-        // Cuando el escáner termina de escribir el código (tecla Enter),
-        // se envía automáticamente a la API para registrarlo.
+        // Cuando el escáner termina de escribir el código (tecla Enter del
+        // teclado suave), se envía automáticamente a la API para registrarlo.
         etTracking.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 val code = etTracking.text.toString().trim()
@@ -65,6 +73,24 @@ class MainActivity : AppCompatActivity() {
             } else {
                 false
             }
+        }
+
+        // El escáner de códigos de barras en modo teclado escribe el código y
+        // termina con una tecla Enter real (hardware). Ese evento no activa
+        // confiablemente el listener del editor, por lo que se escucha también
+        // aquí para disparar el envío automático. Se consume la tecla para no
+        // insertar un salto de línea en el input.
+        etTracking.setOnKeyListener { _, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) {
+                if (event.action == KeyEvent.ACTION_UP) {
+                    val code = etTracking.text.toString().trim()
+                    if (code.isNotEmpty()) {
+                        sendTracking(code)
+                    }
+                    return@setOnKeyListener true
+                }
+            }
+            false
         }
 
         setupResultObserver()
@@ -80,6 +106,15 @@ class MainActivity : AppCompatActivity() {
             etTracking.requestFocus()
             return
         }
+
+        // Evitar envío duplicado del mismo código (teclado suave + Enter de
+        // hardware del escáner pueden disparar ambos listeners en ráfaga).
+        val now = System.currentTimeMillis()
+        if (code == lastSubmittedCode && now - lastSubmitTime < submitDebounceMs) {
+            return
+        }
+        lastSubmittedCode = code
+        lastSubmitTime = now
 
         // Desbloqueo de audio en el primer escaneo del usuario
         if (!isAudioUnlocked) {
