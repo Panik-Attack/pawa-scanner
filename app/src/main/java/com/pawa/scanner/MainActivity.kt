@@ -139,6 +139,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
+     * Habilita o deshabilita el input mientras se procesa un escaneo.
+     * Mientras hay un envío en curso se bloquea para evitar que se escriba
+     * o se envíe otro código por accidente.
+     */
+    private fun setInputEnabled(enabled: Boolean) {
+        etTracking.isEnabled = enabled
+        if (enabled) {
+            etTracking.requestFocus()
+        }
+    }
+
+    /**
      * Observa los cambios de estado del repositorio y actualiza la UI
      * con animación de check/X, sonido y texto de estado.
      */
@@ -169,7 +181,7 @@ class MainActivity : AppCompatActivity() {
         statusText.visibility = View.GONE
 
         // El input queda con foco para seguir escaneando (modo teclado)
-        etTracking.requestFocus()
+        setInputEnabled(true)
     }
 
     /**
@@ -188,6 +200,9 @@ class MainActivity : AppCompatActivity() {
         statusText.alpha = 0f
         statusText.text = message
         statusText.animate().alpha(1f).setDuration(200).start()
+
+        // Bloquear el input mientras se envía al servidor
+        setInputEnabled(false)
     }
 
     /**
@@ -196,7 +211,7 @@ class MainActivity : AppCompatActivity() {
     private fun showSuccess(message: String) {
         // Borrar el input tras un éxito para quedar listo con el siguiente tracking
         etTracking.text.clear()
-        etTracking.requestFocus()
+        setInputEnabled(true)
 
         pbLoading.visibility = View.GONE
         pbLoading.alpha = 0f
@@ -249,7 +264,7 @@ class MainActivity : AppCompatActivity() {
     private fun showResultWithError(message: String, iconRes: Int, sound: ScanSound) {
         // Borrar el input también en error para quedar listo con el siguiente tracking
         etTracking.text.clear()
-        etTracking.requestFocus()
+        setInputEnabled(true)
 
         pbLoading.visibility = View.GONE
         pbLoading.alpha = 0f
